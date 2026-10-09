@@ -1,0 +1,90 @@
+% ============================================================
+%  ego-slides.sty
+%  Ego research presentation style: title page, body, footer
+%  Usage: \documentclass{beamer}  \usepackage{ego-slides}
+%  Requires XeLaTeX or LuaLaTeX.
+% ============================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ego-slides}[2026/10/08 v1.0 Ego research slides style]
+
+\mode<presentation>
+
+% ---------- Fonts ----------
+% Body text: TeX Gyre Termes.  Headings: Libertinus Serif.
+% These two families are the only ones used anywhere in the deck.
+\RequirePackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\newfontfamily\egoheadingfont{Libertinus Serif}
+% beamer.cls switches the default family to sans; switch it back so the
+% body is set in TeX Gyre Termes rather than Latin Modern Sans.
+\renewcommand{\familydefault}{\rmdefault}
+
+% ---------- Base packages ----------
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+
+% ---------- Colors ----------
+\definecolor{egoblue}{HTML}{2C6E9B}
+\definecolor{egodark}{HTML}{1F2A33}
+\definecolor{egogray}{HTML}{6B6B6B}
+\definecolor{egolight}{HTML}{F4F7FA}
+
+% ---------- Theme ----------
+\usetheme{default}
+% Keep the fonts declared above untouched by beamer's own substitutions.
+\usefonttheme{professionalfonts}
+
+% ---------- Title page ----------
+\setbeamercolor{title}{fg=egodark}
+\setbeamercolor{subtitle}{fg=egogray}
+\setbeamercolor{author}{fg=egogray}
+\setbeamercolor{date}{fg=egogray}
+\setbeamercolor{institute}{fg=egogray}
+
+\setbeamerfont{title}{size=\LARGE, series=\bfseries, family=\egoheadingfont}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{author}{size=\small}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{date}{size=\small}
+
+% ---------- Frame titles ----------
+\setbeamercolor{frametitle}{fg=egoblue}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries, family=\egoheadingfont}
+\setbeamertemplate{frametitle}[default][left]
+
+% ---------- Lists ----------
+\setbeamercolor{itemize item}{fg=egoblue}
+\setbeamercolor{itemize subitem}{fg=egogray}
+\setbeamertemplate{itemize item}{\textbullet}
+\setbeamertemplate{itemize subitem}{\textendash}
+
+% ---------- Footer (title / author / page number) ----------
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamercolor{footline}{fg=egogray}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth, ht=2.6ex, dp=1.2ex,
+                           leftskip=1em, rightskip=1em]{}%
+      \usebeamerfont{footline}%
+      \usebeamercolor[fg]{footline}%
+      \insertshorttitle\hfill
+      \insertshortauthor\hfill
+      \insertframenumber\,/\,\inserttotalframenumber{}
+    \end{beamercolorbox}%
+  }%
+}
+
+% ---------- Outline frame shortcut ----------
+\newcommand{\egotoc}{%
+  \begin{frame}[plain]
+    \tableofcontents
+  \end{frame}
+}
+
+\mode<all>
+\endinput

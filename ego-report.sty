@@ -1,0 +1,58 @@
+% ============================================================
+%  ego-report.sty
+%  Ego research report style: fonts, margins, heading levels
+%  Usage: \documentclass{article}  \usepackage{ego-report}
+%  Requires XeLaTeX or LuaLaTeX (uses fontspec).
+% ============================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ego-report}[2026/10/08 v1.0 Ego research report style]
+
+% ---------- Fonts ----------
+% Body text: TeX Gyre Termes.  Headings: Libertinus Serif.
+\RequirePackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\newfontfamily\egoheadingfont{Libertinus Serif}
+
+% ---------- Page layout ----------
+\RequirePackage[a4paper,
+  left=2.5cm, right=2.5cm, top=2.7cm, bottom=2.7cm]{geometry}
+
+% ---------- Math ----------
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{amsfonts}
+\RequirePackage{bm}
+
+% ---------- Figures and tables ----------
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+
+% ---------- Colors ----------
+\RequirePackage{xcolor}
+\definecolor{egoblue}{HTML}{2C6E9B}
+\definecolor{egodark}{HTML}{333333}
+\definecolor{egogray}{HTML}{6B6B6B}
+
+% ---------- Heading styles (Libertinus Serif) ----------
+\RequirePackage{titlesec}
+\titleformat{\section}{\Large\egoheadingfont\bfseries\color{egoblue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\egoheadingfont\bfseries\color{egodark}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\egoheadingfont\bfseries\color{egogray}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.6ex plus .3ex minus .2ex}{1.0ex}
+\titlespacing*{\subsection}{0pt}{1.3ex plus .2ex minus .2ex}{0.8ex}
+
+% ---------- Caption style ----------
+\captionsetup{font=small, labelfont={bf,color=egoblue}, labelsep=quad}
+
+% ---------- Graphics search path (shared with the slides) ----------
+\graphicspath{{figures/}{../figures/}}
+
+% ---------- Hyperlinks and cross-references ----------
+\RequirePackage[colorlinks=true,
+  linkcolor=egoblue, citecolor=egoblue, urlcolor=egoblue]{hyperref}
+\RequirePackage{cleveref}
+
+\endinput

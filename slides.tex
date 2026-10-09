@@ -1,0 +1,28 @@
+% ============================================================
+%  slides.tex - entry point for the current presentation
+%  Compile from the project root:
+%      latexmk slides          (recommended; output goes to build/)
+%  or manually: xelatex slides (run twice)
+% ============================================================
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{ego-slides}
+
+\title[Ego Research]{Ego Research: Progress Report}
+\subtitle{Current results and next steps}
+\author[Ego]{Ego Research}
+\institute{Ego Research}
+\date{\today}
+
+\begin{document}
+
+% ---------- Title slide ----------
+\maketitle
+
+% ---------- Outline ----------
+\egotoc{}
+
+% ---------- Body: include the current meeting deck ----------
+\input{slides/meetings/ex}
+
+\end{document}

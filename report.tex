@@ -1,0 +1,39 @@
+% ============================================================
+%  report.tex - entry point for the consolidated experiment report
+%  Compile from the project root:
+%      latexmk report          (recommended; output goes to build/)
+%  or manually:
+%      xelatex report
+%      bibtex  report
+%      xelatex report
+%      xelatex report
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{ego-report}
+
+\title{Ego Research: Consolidated Experiment Report}
+\author{Ego Research}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  Abstract of the consolidated report. Each experiment is a separate file
+  pulled in from \texttt{reports/\allowbreak experiments/} with \verb|\input|,
+  and all figures are shared from \texttt{figures/}.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ---------- Body: include experiment sections in order ----------
+\input{reports/experiments/ex}
+
+% ---------- References ----------
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

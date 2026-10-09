@@ -1,0 +1,42 @@
+{
+  // ---------- 编译产物统一输出到 build/ ----------
+  // %DIR% = 入口 .tex 所在目录（项目根），因此 PDF 会落在 build/ 下。
+  // 这一步是必需的：否则 LaTeX Workshop 默认会带 -outdir=.，
+  // 从而覆盖 .latexmkrc 里的 $out_dir，把产物丢到项目根目录。
+  "latex-workshop.latex.outDir": "%DIR%/build",
+
+  // ---------- 使用 latexmk + XeLaTeX（读取根目录的 .latexmkrc） ----------
+  "latex-workshop.latex.recipe.default": "latexmk (xelatex)",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk (xelatex)",
+      "tools": ["latexmk-xelatex"]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk-xelatex",
+      "command": "latexmk",
+      "args": [
+        "-xelatex",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ],
+      "env": {}
+    }
+  ],
+
+  // ---------- 保存即编译 ----------
+  "latex-workshop.latex.autoBuild.run": "onSave",
+
+  // ---------- 清理时连同 build/ 内的中间文件一起清 ----------
+  "latex-workshop.latex.clean.subfolder.enabled": true,
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof", "*.lot",
+    "*.out", "*.toc", "*.acn", "*.acr", "*.alg", "*.glg", "*.glo",
+    "*.gls", "*.fls", "*.log", "*.fdb_latexmk", "*.snm", "*.nav",
+    "*.xdv", "*.synctex.gz"
+  ]
+}
