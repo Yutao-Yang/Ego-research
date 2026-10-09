@@ -24,11 +24,12 @@ ego-research/
 │
 ├── references.bib                  # 参考文献
 │
-├── .latexmkrc                      # latexmk 配置：产物统一输出到 build/
+├── .latexmkrc                      # latexmk 配置：中间文件到 build/，PDF 到 pdf/
 ├── .gitignore                      # 忽略 build/ 与 LaTeX 中间文件
 ├── .vscode/settings.json           # LaTeX Workshop 输出目录配置
 │
-├── build/                          # 【自动生成】所有中间文件与结果 PDF
+├── build/                          # 【自动生成】所有中间文件
+├── pdf/                            # 【自动生成】最终 PDF 及其 synctex.gz
 └── README.md
 ```
 
@@ -55,11 +56,11 @@ ego-research/
 
 所有命令都在**项目根目录**执行。目录布局：
 
-- **结果 PDF 与 `.tex` 同目录**：`report.pdf` / `slides.pdf` 就躺在项目根，方便直接查看；
+- **结果 PDF 统一在 `pdf/`**：`pdf/report.pdf` / `pdf/slides.pdf`，根目录保持干净；
 - **所有中间文件在 `build/`**：`.aux` `.log` `.toc` `.bbl` `.xdv` `*.fdb_latexmk` …
-- `.synctex.gz` 会跟着 PDF 留在根目录 —— 这是 SyncTeX 的硬性要求（IDE 里源码 ↔ PDF 跳转靠它），并且已被 `.gitignore` 忽略。
+- `.synctex.gz` 跟着 PDF 一起进 `pdf/` —— 这是 SyncTeX 的硬性要求（IDE 里源码 ↔ PDF 跳转靠它），并且已被 `.gitignore` 忽略。
 
-实现方式：`.latexmkrc` 中 `$aux_dir = 'build'` 管中间文件，`$out_dir = ''` 表示 PDF 输出到当前目录。
+实现方式：`.latexmkrc` 中 `$aux_dir = 'build'` 管中间文件，`$out_dir = 'pdf'` 管最终 PDF。
 
 ```bash
 latexmk report        # 编译报告（自动 xelatex → bibtex → 重跑到收敛）
@@ -67,21 +68,22 @@ latexmk slides        # 编译幻灯片
 latexmk -C            # 清理产物
 ```
 
-> 若连 `.synctex.gz` 也不想留在根目录，把 `.latexmkrc` 里的 `-synctex=1` 改成 `-synctex=0`；代价是 IDE 中无法在源码与 PDF 之间互相跳转。
+> 若连 `.synctex.gz` 也不想留在 `pdf/`，把 `.latexmkrc` 里的 `-synctex=1` 改成 `-synctex=0`；代价是 IDE 中无法在源码与 PDF 之间互相跳转。
 
 产物位置：
 
-- 根目录：`report.pdf`、`slides.pdf`（与对应 `.tex` 同目录），以及 `report.synctex.gz`、`slides.synctex.gz`
+- `pdf/`：`report.pdf`、`slides.pdf`，以及 `report.synctex.gz`、`slides.synctex.gz`
 - `build/`：`.aux`、`.log`、`.toc`、`.bbl`、`.xdv`、`*.fdb_latexmk` 等全部中间文件
+- 根目录：只剩源码与配置（`.tex`、`.sty`、`.bib`、`.latexmkrc` 等）
 
-目录布局由 [.latexmkrc](.latexmkrc) 控制：`$aux_dir = 'build'`（中间文件）+ `$out_dir = ''`（PDF 用当前目录），同时在这里指定用 XeLaTeX。
+目录布局由 [.latexmkrc](.latexmkrc) 控制：`$aux_dir = 'build'`（中间文件）+ `$out_dir = 'pdf'`（最终 PDF），同时在这里指定用 XeLaTeX。
 若坚持手动编译，可写 `xelatex -output-directory=build report`，但需要自己按 `xelatex → bibtex → xelatex ×2` 的顺序跑，且 PDF 会留在 `build/`，因此**推荐直接用 `latexmk`**。
 
 ## 编辑器配置（VS Code / Trae + LaTeX Workshop）
 
 `.vscode/settings.json` 已配置好，让编辑器用 latexmk + XeLaTeX，并按上面的布局放置产物：
 
-- `latex-workshop.latex.outDir = "%DIR%"` —— 告诉编辑器去 `.tex` 同目录找 PDF / synctex。**关键是不要在 `tools.args` 里加 `%OUTDIR%`**，那会覆盖 `.latexmkrc` 的 `$aux_dir` / `$out_dir` 设置。
+- `latex-workshop.latex.outDir = "%DIR%/pdf"` —— 告诉编辑器去 `pdf/` 找 PDF / synctex。**关键是不要在 `tools.args` 里加 `%OUTDIR%`**，那会覆盖 `.latexmkrc` 的 `$aux_dir` / `$out_dir` 设置。
 - `latex-workshop.latex.recipes` / `latex-workshop.latex.tools` —— 定义 `latexmk (xelatex)` 配方并设为默认。
 - `latex-workshop.latex.autoBuild.run = "onSave"` —— 保存即编译；想改成手动触发设为 `"never"` 即可。
 
