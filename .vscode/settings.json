@@ -1,9 +1,9 @@
 {
-  // ---------- 编译产物统一输出到 build/ ----------
-  // %DIR% = 入口 .tex 所在目录（项目根），因此 PDF 会落在 build/ 下。
-  // 这一步是必需的：否则 LaTeX Workshop 默认会带 -outdir=.，
-  // 从而覆盖 .latexmkrc 里的 $out_dir，把产物丢到项目根目录。
-  "latex-workshop.latex.outDir": "%DIR%/build",
+  // ---------- 输出目录布局 ----------
+  // 最终 PDF 与对应 .tex 同目录（项目根）；中间文件由 .latexmkrc 的 $aux_dir 送到 build/。
+  // 这里保持 %DIR%：告诉 LaTeX Workshop 去根目录找 PDF / synctex.gz。
+  // 重要：不要在下面 tools.args 里加 %OUTDIR%，那会覆盖 .latexmkrc 的目录设置。
+  "latex-workshop.latex.outDir": "%DIR%",
 
   // ---------- 使用 latexmk + XeLaTeX（读取根目录的 .latexmkrc） ----------
   "latex-workshop.latex.recipe.default": "latexmk (xelatex)",
@@ -31,7 +31,7 @@
   // ---------- 保存即编译 ----------
   "latex-workshop.latex.autoBuild.run": "onSave",
 
-  // ---------- 清理时连同 build/ 内的中间文件一起清 ----------
+  // ---------- 清理：连同 build/ 内的中间文件一起清 ----------
   "latex-workshop.latex.clean.subfolder.enabled": true,
   "latex-workshop.latex.clean.fileTypes": [
     "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof", "*.lot",
