@@ -1,0 +1,39 @@
+% ============================================================
+%  openwam-libero.tex
+%  Standalone entry point for Experiment A (OpenWAM-alpha on LIBERO).
+%  Compile from the project root:
+%      latexmk reports/experiments/2026.10.05-2026.10.11-openwam-libero/openwam-libero
+%  The same body is merged into the root report.tex.
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{ego-report}
+
+\title{Reproduction of OpenWAM-$\alpha$ on LIBERO}
+\author{Ego Research}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This report documents a closed-loop reproduction of the released
+  OpenWAM-$\alpha$ LIBERO policy on a single A100 GPU. Using the authors' native
+  task protocol and published weights, the policy reaches $1985/2000 = 99.25\,\%$
+  over the four LIBERO suites, $0.05$ percentage points below the officially
+  reported $99.30\,\%$. No weights were retrained. The report covers the
+  benchmark, the model architecture, the data pipeline, the frozen environment,
+  the aggregate and per-task results, all 15 failed episodes, compute and timing
+  figures, a genuine teaching case, and the limitations of the claim.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\input{reports/experiments/2026.10.05-2026.10.11-openwam-libero/body}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

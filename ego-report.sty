@@ -26,6 +26,8 @@
 % ---------- Figures and tables ----------
 \RequirePackage{graphicx}
 \RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{longtable}
 \RequirePackage{float}
 \RequirePackage{caption}
 \RequirePackage{subcaption}
@@ -49,6 +51,17 @@
 
 % ---------- Graphics search path (shared with the slides) ----------
 \graphicspath{{figures/}{../figures/}}
+
+% ---------- Breakable monospace ----------
+% \btt{...} sets its argument in monospace and allows a line break after
+% every character, so long paths, revisions and hashes cannot overflow the
+% text block.  Escape underscores as usual: \btt{a\_b}.
+\makeatletter
+\newcommand{\btt}[1]{\texttt{\btt@scan#1\relax}}
+\def\btt@scan#1{\ifx#1\relax\else#1\allowbreak\expandafter\btt@scan\fi}
+\makeatother
+% A little extra stretch keeps marginal lines from going overfull
+\setlength{\emergencystretch}{1em}
 
 % ---------- Hyperlinks and cross-references ----------
 \RequirePackage[colorlinks=true,

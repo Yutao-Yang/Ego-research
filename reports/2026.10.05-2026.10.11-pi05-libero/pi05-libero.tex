@@ -1,0 +1,42 @@
+% ============================================================
+%  pi05-libero.tex
+%  Standalone entry point for Experiment B (pi-0.5 on LIBERO).
+%  Compile from the project root:
+%      latexmk reports/experiments/2026.10.05-2026.10.11-pi05-libero/pi05-libero
+%  The same body is merged into the root report.tex.
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{ego-report}
+
+\title{Reproduction of $\pi_{0.5}$ on LIBERO}
+\author{Ego Research}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This report documents a closed-loop reproduction of the released $\pi_{0.5}$
+  LIBERO policy from Physical Intelligence, evaluated on a single A100 GPU with
+  the official OpenPI implementation. Under the pre-registered main protocol
+  (P12, the authors' default precision) the policy reaches
+  $1935/2000 = 96.75\,\%$ over the four LIBERO suites, $0.10$ percentage points
+  below the official $96.85\,\%$. No weights were retrained. A separate
+  highest-precision control reaches $97.00\,\%$. The report covers the benchmark,
+  the model configuration, the pipeline, the frozen environment, the aggregate
+  and per-task results, compute and timing, six genuine teaching cases, a
+  physically replayed drawer failure, two clearly separated classes of anomaly,
+  and the limitations of the claim.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\input{reports/experiments/2026.10.05-2026.10.11-pi05-libero/body}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
