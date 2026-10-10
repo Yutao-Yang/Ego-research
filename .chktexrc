@@ -1,0 +1,50 @@
+## .chktexrc --- project-local ChkTeX configuration for Ego-research.
+##
+## LaTeX Workshop lints the open file with chktex and passes this file to it
+## (`chktex ... -l <abs path to .chktexrc>`), so everything below governs what
+## shows up in the editor's Problems panel.
+##
+## chktex is invoked with `-wall`, i.e. every message class is enabled.  For a
+## technical document full of identifiers, file paths and inline math that
+## produces mostly false positives and pure style advice, which drowns the few
+## real findings.  `CmdLine` is chktex's mechanism for making command-line
+## options permanent, so the noisy classes are muted here.
+##
+## Muted classes, and why each one is noise for this project:
+##   8   dash length           hyphens inside identifiers, paths and ISO dates
+##                             (2026.10.05-2026.10.11-openwam-libero,
+##                             2026-10-05T18:40:58+08:00) and the deliberate
+##                             en-dashes (world--action, vision--language--action)
+##   9   unbalanced ( )        parentheses inside \texttt{...} Python snippets
+##                             that are split across several groups
+##   12  interword spacing     "sentence. \emph{...}"
+##   13  intersentence \@      sentence-ending acronyms ("GPU. No ...", "et al.,")
+##   21  command not intended  \, and friends inside $...$ (same origin as 46)
+##   24  space before \label   \label on its own line after \section{...}
+##   36  space before (        function calls inside \texttt{...}, e.g. env.reset()
+##   41  primitive TeX         deliberate \vskip / \def in the two .sty files
+##   46  \(...\) vs $...$       this project writes inline math as $...$
+##
+## The genuine findings were fixed in the sources, not muted: class 1 (command
+## terminated by a space) everywhere except \egobgdir, class 2 (missing
+## non-breaking space) and class 6 (missing italic correction).
+##
+## \egobgdir is the one exception: it ends the asset directory on the letter
+## `r', so the Chinese file name that follows has to start with a space to
+## terminate the control word, and graphicx cannot take the `{}' idiom (the
+## braces would be spliced into the file name, e.g.
+## `figures/beamer_background/{}页眉页脚.png').  `Silent' is chktex's list of
+## commands for which a trailing space is legitimate; the entry below is
+## appended to chktex's built-in list.
+
+Silent
+{
+    \egobgdir
+}
+
+TabSize = 8
+
+CmdLine
+{
+    -n8 -n9 -n12 -n13 -n21 -n24 -n36 -n41 -n46
+}

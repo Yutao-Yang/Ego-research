@@ -1,0 +1,173 @@
+% ============================================================
+%  body.tex - Experiment A (OpenWAM-alpha on LIBERO)
+%  Frames only (no preamble).  Imported by
+%      slides/2026.10.05-2026.10.11-openwam-libero/openwam-libero-slides.tex
+%      slides.tex
+%  The importing document must load the `ego-beamer` style first.
+% ============================================================
+
+\egodeckid{2026.10.05-2026.10.11-openwam-libero}
+
+\title{Reproducing OpenWAM-\texorpdfstring{$\alpha$}{alpha} on LIBERO}
+\subtitle{Closed-loop success rate on a single A100}
+\author{Yutao-Yang}
+\date{2026.10.05--2026.10.11}
+
+\egotitleframe%
+\egooutline%
+
+% ============================================================
+\section{Motivation}
+% ============================================================
+
+\begin{frame}{Why reproduce OpenWAM-\texorpdfstring{$\alpha$}{alpha}?}
+  \begin{itemize}
+    \item OpenWAM-\texorpdfstring{$\alpha$}{alpha} is a world--action model:
+          a video-generation backbone is joined with an action expert.
+    \item The authors report \textbf{99.30\,\%} on the four standard LIBERO
+          suites.
+    \item Question: does the \emph{released} checkpoint reproduce that number
+          under the \emph{native} task protocol?
+  \end{itemize}
+  \vfill
+  \begin{block}{What is held fixed}
+    Released weights, LIBERO task protocol, environment and budgets.
+    No retraining, no per-seed tuning.
+  \end{block}
+\end{frame}
+
+% ============================================================
+\section{Benchmark and setup}
+% ============================================================
+
+\begin{frame}{LIBERO at a glance}
+  \begin{columns}[T]
+    \begin{column}{0.5\linewidth}
+      \begin{itemize}
+        \item Four suites: Spatial, Object, Goal, LIBERO-10.
+        \item 40 tasks $\times$ 50 episodes $=$ \textbf{2000} closed-loop
+              episodes.
+        \item 20\,Hz control; per-task budgets of 600 / 700 steps.
+        \item Success is decided by the task's BDDL goal predicate.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-openwam-libero/official-comparison.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Result}
+% ============================================================
+
+\begin{frame}{Headline result}
+  \begin{columns}[T]
+    \begin{column}{0.52\linewidth}
+      \begin{itemize}
+        \item Reproduced: $\mathbf{1985/2000 = 99.25\,\%}$.
+        \item Official: $99.30\,\%$ ($-0.05$ percentage points).
+        \item All 2000 episodes retained; engineering errors reported
+              separately.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-openwam-libero/official-comparison.png}
+    \end{column}
+  \end{columns}
+  \vfill
+  \begin{block}{Per suite}
+    Spatial $497/500$ \quad Object $498/500$ \quad Goal $497/500$ \quad
+    LIBERO-10 $493/500$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Every task, every suite}
+  \centering
+  \includegraphics[width=0.92\linewidth]{2026.10.05-2026.10.11-openwam-libero/all-40-tasks.png}
+\end{frame}
+
+% ============================================================
+\section{Compute}
+% ============================================================
+
+\begin{frame}{Compute and control budget}
+  \begin{columns}[T]
+    \begin{column}{0.48\linewidth}
+      \begin{itemize}
+        \item Wall time: $25\,829.198$\,s.
+        \item Peak memory: $25\,676$\,MiB on one A100.
+        \item Mean GPU utilisation: $29.40\,\%$.
+        \item $301\,810$ executed control steps.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-openwam-libero/gpu-resource-history.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Teaching case}
+% ============================================================
+
+\begin{frame}{A genuine closed loop: head and wrist views}
+  \centering
+  \begin{tabular}{ccc}
+    \includegraphics[width=0.23\linewidth]{2026.10.05-2026.10.11-openwam-libero/step-0000-head.png} &
+    \includegraphics[width=0.23\linewidth]{2026.10.05-2026.10.11-openwam-libero/step-0036-head.png} &
+    \includegraphics[width=0.23\linewidth]{2026.10.05-2026.10.11-openwam-libero/step-0073-head.png} \\[1mm]
+    \includegraphics[width=0.23\linewidth]{2026.10.05-2026.10.11-openwam-libero/step-0000-wrist.png} &
+    \includegraphics[width=0.23\linewidth]{2026.10.05-2026.10.11-openwam-libero/step-0036-wrist.png} &
+    \includegraphics[width=0.23\linewidth]{2026.10.05-2026.10.11-openwam-libero/step-0073-wrist.png} \\
+    {\scriptsize step 0} & {\scriptsize step 36} & {\scriptsize step 73}
+  \end{tabular}
+  \vfill
+  {\scriptsize External (top) and wrist (bottom) frames at three control steps.}
+\end{frame}
+
+\begin{frame}{Action trace and rollout}
+  \begin{columns}[T]
+    \begin{column}{0.56\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-openwam-libero/case-actions.png}
+    \end{column}
+    \begin{column}{0.4\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-openwam-libero/case-contact-sheet.png}
+      \vfill
+      \egovideolink{2026.10.05-2026.10.11-openwam-libero/case-rollout.mp4}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Takeaway}
+% ============================================================
+
+\begin{frame}{What this shows --- and what it does not}
+  \begin{itemize}
+    \item The released checkpoint \textbf{reproduces the official score} to
+          within $0.05$ percentage points.
+    \item Agreement is about the aggregate number, not per-episode identity.
+    \item No world-model video metric is claimed: the run stored no predicted
+          future frames.
+    \item The result must not be read as a fair architecture comparison with
+          the other model in this project.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Reference}
+  \begin{itemize}
+    \item OpenWAM: \emph{An Open, Modular Exploration Towards Systematic
+          World--Action Model Pretraining}, arXiv:2609.07398.
+    \item LIBERO: Liu et al., \emph{Benchmarking Knowledge Transfer for
+          Lifelong Robot Learning}, arXiv:2306.03310.
+  \end{itemize}
+  \vfill
+  \centering
+  {\small Full report: \texttt{reports/2026.10.05-2026.10.11-openwam-libero/}}
+\end{frame}

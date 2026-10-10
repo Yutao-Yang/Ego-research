@@ -1,0 +1,241 @@
+% ============================================================
+%  ego-beamer.sty
+%  Ego research presentation theme (report decks).
+%
+%  Layout, driven by the four look-and-feel assets in
+%  figures/beamer_background/:
+%    * body background image    -> every ordinary (content) slide
+%    * title background image   -> title slide and section divider slides
+%    * blue bar image           -> header bar and footer bar
+%    * logo image               -> top-right corner of every slide
+%
+%  Slide chrome:
+%    headline  : blue bar, frame title on the left, logo on the right
+%    footline  : blue bar split into three blocks
+%                (author | report folder id | current page number)
+%                The number is the physical page of the PDF
+%                (\insertpagenumber), so it stays meaningful on the
+%                title / outline / section-divided slides too.
+%
+%  Usage:
+%      \documentclass[aspectratio=169]{beamer}
+%      \usepackage{ego-beamer}
+%      \egodeckid{2026.10.05-2026.10.11-openwam-libero}
+%  Requires XeLaTeX or LuaLaTeX (uses fontspec).
+% ============================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ego-beamer}[2026/10/10 v1.0 Ego research beamer theme]
+
+\mode<presentation>
+
+% ---------- Fonts ----------
+% Body: TeX Gyre Termes.  Headings: Libertinus Serif.
+\RequirePackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\newfontfamily\egoheadingfont{Libertinus Serif}
+% beamer switches the default family to sans; switch it back.
+\renewcommand{\familydefault}{\rmdefault}
+\usefonttheme{professionalfonts}
+
+% ---------- Base packages ----------
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{booktabs}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+
+% ---------- Theme colours (sampled from the assets) ----------
+\definecolor{egoblue}{HTML}{0363C9}      % header / footer bar
+\definecolor{egodeepblue}{HTML}{002FA4}  % dark end of the title background
+\definecolor{egodark}{HTML}{1F2A33}      % body text on light backgrounds
+\definecolor{egogray}{HTML}{5B6670}
+
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+% ---------- Asset paths ----------
+\graphicspath{{figures/}{figures/beamer_background/}{../figures/}{../../figures/}}
+\newcommand{\egobgdir}{figures/beamer_background/}
+\newcommand{\egoimgbody}{\egobgdir 正文图片背景.png}
+\newcommand{\egoimgtitle}{\egobgdir 标题页图片背景2.png}
+\newcommand{\egoimgbar}{\egobgdir 页眉页脚.png}
+\newcommand{\egoimglogo}{\egobgdir 右上角logo.png}
+
+% ---------- Footer identifiers ----------
+% Author shown in the first footer block (fixed by the house style).
+\def\egofootauthor{Yutao-Yang}
+% Report folder id shown in the middle footer block; set per deck with
+% \egodeckid{...}.
+\def\egodeckidname{}
+\newcommand{\egodeckid}[1]{\def\egodeckidname{#1}}
+
+% ---------- Slide backgrounds ----------
+% Body slides use the light body image; title and section slides use the
+% dark title image.  \egobodybg% / \egotitlebg are deliberately issued
+% *outside* a frame, because beamer reads the template when the frame
+% starts.
+\newcommand{\egobodybgtemplate}{%
+  \includegraphics[width=\paperwidth,height=\paperheight]{\egoimgbody}}
+% The title photo carries a lot of local contrast, so white text on top of it
+% is not always legible.  A translucent scrim keeps the photo visible while
+% guaranteeing contrast for the title page, the outline and the dividers.
+\newcommand{\egoscrimopacity}{0.38}
+\newcommand{\egotitlebgtemplate}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,inner sep=0] at (current page.north west)
+      {\includegraphics[width=\paperwidth,height=\paperheight]{\egoimgtitle}};
+    \fill[black,opacity=\egoscrimopacity]
+      (current page.south west) rectangle (current page.north east);
+  \end{tikzpicture}%
+}
+\newcommand{\egobodybg}{\usebackgroundtemplate{\egobodybgtemplate}}
+\newcommand{\egotitlebg}{\usebackgroundtemplate{\egotitlebgtemplate}}
+\egobodybg%
+
+% ---------- Header bar ----------
+% The headline reserves the bar height and draws the bar image and the logo.
+% The frame title is drawn by the frametitle template instead: beamer expands
+% the headline before \insertframetitle exists, so the title cannot be typeset
+% there.  Both drawings are overlay pictures anchored to the physical page, so
+% they always land on the top band no matter where the surrounding boxes sit.
+\newlength{\egobarheight}\setlength{\egobarheight}{7mm}
+\setbeamerfont{egobartitle}{size=\normalsize,series=\bfseries,family=\egoheadingfont}
+\setbeamercolor{egobartitle}{fg=white}
+\setbeamerfont{egofootline}{size=\scriptsize,family=\egoheadingfont}
+\setbeamercolor{egofootline}{fg=white}
+
+\setbeamertemplate{headline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=\egobarheight,dp=0pt]{}%
+    \end{beamercolorbox}%
+  }%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,inner sep=0] at (current page.north west)
+      {\includegraphics[width=\paperwidth]{\egoimgbar}};
+    \node[anchor=east,inner sep=0,xshift=-4mm,yshift=-3.5mm]
+      at (current page.north east)
+      {\includegraphics[height=4.2mm]{\egoimglogo}};
+  \end{tikzpicture}%
+}
+
+% Frame title: white text centred in the blue bar, contributing no height of
+% its own; a small skip separates the bar from the frame body.
+\setbeamertemplate{frametitle}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=west,inner sep=0,xshift=5mm,yshift=-3.5mm]
+      at (current page.north west)
+      {\usebeamercolor[fg]{egobartitle}\usebeamerfont{egobartitle}%
+       \insertframetitle};
+  \end{tikzpicture}%
+  \vskip2mm%
+}
+
+% ---------- Footer bar (three blocks) ----------
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=\egobarheight,dp=0pt]{}%
+    \end{beamercolorbox}%
+  }%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south west,inner sep=0] at (current page.south west)
+      {\includegraphics[width=\paperwidth]{\egoimgbar}};
+    \node[anchor=south west,inner sep=0,xshift=5mm,yshift=2mm]
+      at (current page.south west)
+      {\usebeamercolor[fg]{egofootline}\usebeamerfont{egofootline}\egofootauthor};
+    \node[anchor=south,inner sep=0,yshift=2mm] at (current page.south)
+      {\usebeamercolor[fg]{egofootline}\usebeamerfont{egofootline}\egodeckidname};
+    \node[anchor=south east,inner sep=0,xshift=-5mm,yshift=2mm]
+      at (current page.south east)
+      {\usebeamercolor[fg]{egofootline}\usebeamerfont{egofootline}%
+       \insertpagenumber};
+  \end{tikzpicture}%
+}
+
+% ---------- Title slide ----------
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=white}
+\setbeamercolor{author}{fg=white}
+\setbeamercolor{date}{fg=white}
+\setbeamercolor{institute}{fg=white}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries,family=\egoheadingfont}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{author}{size=\small}
+\setbeamerfont{date}{size=\small}
+
+% Outline entries sit on the dark title background, so they have to be white;
+% otherwise they inherit the dark body colour and vanish into the photo.
+\setbeamercolor{section in toc}{fg=white}
+\setbeamercolor{section in toc shaded}{fg=white}
+\setbeamercolor{subsection in toc}{fg=white}
+\setbeamercolor{subsection in toc shaded}{fg=white}
+\setbeamerfont{section in toc}{family=\egoheadingfont,
+  size=\normalsize,series=\bfseries}
+\setbeamerfont{subsection in toc}{family=\egoheadingfont,size=\small}
+
+% ---------- Text colours on light body slides ----------
+\setbeamercolor{normal text}{fg=egodark}
+\setbeamercolor{itemize item}{fg=egoblue}
+\setbeamercolor{itemize subitem}{fg=egogray}
+\setbeamertemplate{itemize item}{\textbullet}
+\setbeamertemplate{itemize subitem}{\textendash}
+\setbeamercolor{structure}{fg=egoblue}
+\setbeamercolor{block title}{fg=white,bg=egoblue}
+\setbeamercolor{block body}{fg=egodark,bg=egoblue!6}
+
+% ---------- Section divider ----------
+% \egosectionpage{<title>} draws a full title-background divider slide.
+% The frame is `plain`: title-background slides carry no header bar, no logo,
+% no footer bar and no page number.  `plain` suppresses the headline and
+% footline templates only; the background canvas is still drawn (beamer does
+% it from \ps@empty), so the title background image survives.  The frame title
+% argument is omitted as well, because beamer would otherwise still typeset
+% the frametitle template (white text, drawn for a blue bar that is now gone).
+\newcommand{\egosectionpage}[1]{%
+  \egotitlebg%
+  \begin{frame}[plain,noframenumbering]
+    \vfill
+    \centering
+    {\color{white}\Huge\egoheadingfont\bfseries #1}
+    \vfill
+  \end{frame}
+  \egobodybg%
+}
+\AtBeginSection[]{\egosectionpage{\insertsectionhead}}
+
+% ---------- Outline slide (title background) ----------
+% `plain` for the same reason as the section divider.  The heading is typeset
+% in the body now, since a plain frame carries no frametitle.
+\newcommand{\egooutline}{%
+  \egotitlebg%
+  \begin{frame}[plain,noframenumbering]
+    \vfill
+    {\centering{\color{white}\Huge\egoheadingfont\bfseries Contents}\par}
+    \vspace{4mm}
+    {\color{white}\tableofcontents}
+    \vfill
+  \end{frame}
+  \egobodybg%
+}
+
+% ---------- Title slide helper ----------
+\newcommand{\egotitleframe}{%
+  \egotitlebg%
+  \begin{frame}[plain,noframenumbering]
+    \titlepage%
+  \end{frame}
+  \egobodybg%
+}
+
+% ---------- Video link helper ----------
+% Beamer's media packages need a specific viewer, so a video is shown as a
+% representative still frame plus a clickable link to the file.
+% The PDF lives in pdf/, hence the ../ prefix.
+\newcommand{\egovideolink}[2][Play video]{%
+  \href{run:../figures/#2}{\beamerbutton{#1}}%
+}
+
+\mode<all>
+\endinput

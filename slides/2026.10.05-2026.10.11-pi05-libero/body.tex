@@ -1,0 +1,264 @@
+% ============================================================
+%  body.tex - Experiment B (pi-0.5 on LIBERO)
+%  Frames only (no preamble).  Imported by
+%      slides/2026.10.05-2026.10.11-pi05-libero/pi05-libero-slides.tex
+%      slides.tex
+%  The importing document must load the `ego-beamer` style first.
+% ============================================================
+
+\egodeckid{2026.10.05-2026.10.11-pi05-libero}
+
+\title{Reproducing \texorpdfstring{$\pi_{0.5}$}{pi-0.5} on LIBERO}
+\subtitle{Official OpenPI weights and protocol, single A100}
+\author{Yutao-Yang}
+\date{2026.10.05--2026.10.11}
+
+\egotitleframe%
+\egooutline%
+
+% ============================================================
+\section{Motivation}
+% ============================================================
+
+\begin{frame}{Why reproduce \texorpdfstring{$\pi_{0.5}$}{pi-0.5}?}
+  \begin{itemize}
+    \item \texorpdfstring{$\pi_{0.5}$}{pi-0.5} is a vision--language--action
+          model: two camera streams and a language task in, a continuous
+          $10 \times 7$ action chunk out.
+    \item The authors report \textbf{96.85\,\%} over the four standard LIBERO
+          suites.
+    \item Question: does the \emph{released} checkpoint, driven by the
+          \emph{official} OpenPI implementation, reproduce that number on one
+          A100?
+  \end{itemize}
+  \vfill
+  \begin{block}{What is held fixed}
+    Released LIBERO weights, authors' task protocol, environment and budgets.
+    No retraining, no per-seed selection. A P10 highest-precision run is kept
+    as a \emph{control}, not as the main table.
+  \end{block}
+\end{frame}
+
+% ============================================================
+\section{Benchmark and setup}
+% ============================================================
+
+\begin{frame}{The four LIBERO suites}
+  \begin{columns}[T]
+    \begin{column}{0.46\linewidth}
+      \begin{itemize}
+        \item $40$ tasks $\times$ $50$ fixed initial states $=$
+              \textbf{2000} closed-loop episodes.
+        \item 20\,Hz control; $256$ RGB frames, $180^{\circ}$ rotation, padded
+              to $224$.
+        \item Success is the official \texttt{done}/\texttt{goal} signal;
+              timeouts count as failures.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\linewidth}
+      \centering
+      \vspace{-2mm}
+      \begin{tabular}{@{}llr@{}}
+        \toprule
+        Suite & Focus & Official \\
+        \midrule
+        Spatial   & spatial relations   & 98.8\,\% \\
+        Object    & target objects      & 98.2\,\% \\
+        Goal      & goal states         & 98.0\,\% \\
+        LIBERO-10 & longer horizon      & 92.4\,\% \\
+        \midrule
+        Mean      & 40 tasks               & 96.85\,\% \\
+        \bottomrule
+      \end{tabular}
+      \vfill
+      {\scriptsize Official numbers come from the OpenPI release table, not
+       from this run.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Result}
+% ============================================================
+
+\begin{frame}{Headline result}
+  \begin{columns}[T]
+    \begin{column}{0.5\linewidth}
+      \begin{itemize}
+        \item Reproduced: $\mathbf{1935/2000 = 96.75\,\%}$.
+        \item Official: $96.85\,\%$ ($-0.10$ percentage points).
+        \item All 2000 episodes retained; all $64\,761$ inferences and
+              $320\,142$ executed steps finite.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-pi05-libero/official-control-native.png}
+    \end{column}
+  \end{columns}
+  \vfill
+  \begin{block}{Per suite (success / 500)}
+    Spatial $495$ \quad Object $490$ \quad Goal $491$ \quad LIBERO-10 $459$.
+    \hfill {\normalfont{}P10 precision control: $97.00\,\%$.}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Every task}
+  \centering
+  \includegraphics[width=0.9\linewidth]{2026.10.05-2026.10.11-pi05-libero/all-40-task-rates.png}
+\end{frame}
+
+% ============================================================
+\section{Compute}
+% ============================================================
+
+\begin{frame}{Compute and control budget}
+  \begin{columns}[T]
+    \begin{column}{0.44\linewidth}
+      \begin{itemize}
+        \item End-to-end wall time: $9673.44$\,s ($\approx 2$\,h\,41\,m) ---
+              the four suites overlap, so they must not be summed.
+        \item $64\,761$ model queries; $320\,142$ executed control steps.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.52\linewidth}
+      \centering
+      \vspace{-1mm}
+      \begin{tabular}{@{}lrr@{}}
+        \toprule
+        Suite & Wall & Steps \\
+        \midrule
+        spatial   & 85.36 min  & 52\,625  \\
+        object    & 95.89 min  & 70\,938  \\
+        goal      & 85.43 min  & 57\,342  \\
+        LIBERO-10 & 147.45 min & 139\,237 \\
+        \bottomrule
+      \end{tabular}
+      \vfill
+      {\scriptsize Predict 10 actions, execute the first 5, then replan.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Teaching cases}
+% ============================================================
+
+\begin{frame}{Genuine model inputs: external and wrist views}
+  \centering
+  \begin{tabular}{cccc}
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/spatial-t0-i0-first-agent.png} &
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/object-t0-i0-first-agent.png} &
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i0-first-agent.png} &
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i1-first-agent.png} \\[1mm]
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/spatial-t0-i0-first-wrist.png} &
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/object-t0-i0-first-wrist.png} &
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i0-first-wrist.png} &
+    \includegraphics[width=0.18\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i1-first-wrist.png} \\
+    {\scriptsize spatial} & {\scriptsize object} & {\scriptsize goal i0} & {\scriptsize goal i1}
+  \end{tabular}
+  \vfill
+  {\scriptsize First real query of four teaching cases. These six P9 cases are
+   engineering cases and do not replace the 2000-episode score.}
+\end{frame}
+
+\begin{frame}{Executed actions}
+  \vspace{-1mm}
+  \centering
+  \begin{tabular}{cc}
+    \includegraphics[width=0.30\linewidth]{2026.10.05-2026.10.11-pi05-libero/spatial-t0-i0-actions.png} &
+    \includegraphics[width=0.30\linewidth]{2026.10.05-2026.10.11-pi05-libero/object-t0-i0-actions.png} \\[0.5mm]
+    {\scriptsize spatial t0 i0 (success, 101 steps)} &
+    {\scriptsize object t0 i0 (success, 131 steps)} \\[1.5mm]
+    \includegraphics[width=0.30\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i0-actions.png} &
+    \includegraphics[width=0.30\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i1-actions.png} \\[0.5mm]
+    {\scriptsize goal t0 i0 (success, 116 steps)} &
+    {\scriptsize goal t0 i1 (timeout failure, 300 steps)}
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Rollouts}
+  \begin{columns}[T]
+    \begin{column}{0.48\linewidth}
+      \centering
+      \includegraphics[width=0.62\linewidth]{2026.10.05-2026.10.11-pi05-libero/spatial-t0-i0-last-agent.png}
+      \vfill
+      \egovideolink{2026.10.05-2026.10.11-pi05-libero/spatial-t0-i0-rollout.mp4}\\[1mm]
+      {\scriptsize spatial t0 i0 --- success}
+    \end{column}
+    \begin{column}{0.48\linewidth}
+      \centering
+      \includegraphics[width=0.62\linewidth]{2026.10.05-2026.10.11-pi05-libero/goal-t0-i1-last-agent.png}
+      \vfill
+      \egovideolink{2026.10.05-2026.10.11-pi05-libero/goal-t0-i1-rollout.mp4}\\[1mm]
+      {\scriptsize goal t0 i1 --- timeout failure}
+    \end{column}
+  \end{columns}
+  \vfill
+  {\scriptsize Last query of each run. Videos are written at 10\,fps for viewing,
+   so they last about twice the simulated action time. Click a button to open
+   the file next to the PDF.}
+\end{frame}
+
+% ============================================================
+\section{Normal failures}
+% ============================================================
+
+\begin{frame}{An open drawer is not success}
+  \begin{columns}[T]
+    \begin{column}{0.27\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-pi05-libero/drawer-success-agent.png}\\[1mm]
+      {\scriptsize ``open the middle drawer'' --- \textbf{success}\\
+       middle drawer $-0.14426769$}
+    \end{column}
+    \hfill
+    \begin{column}{0.27\linewidth}
+      \centering
+      \includegraphics[width=\linewidth]{2026.10.05-2026.10.11-pi05-libero/drawer-failure-agent.png}\\[1mm]
+      {\scriptsize ``open the middle drawer'' --- \textbf{failure}\\
+       middle drawer $0.00147690$\\
+       bottom drawer opened}
+    \end{column}
+  \end{columns}
+  \vfill
+  {\scriptsize The BDDL goal requires the \emph{middle}-drawer joint below
+   $-0.14$. Both rolls were replayed on CPU with a maximum state error of $0$
+   and agreed \texttt{done}/\texttt{goal} signals.}
+\end{frame}
+
+% ============================================================
+\section{Takeaway}
+% ============================================================
+
+\begin{frame}{What this shows --- and what it does not}
+  \begin{itemize}
+    \item The released checkpoint \textbf{reproduces the official score} to
+          within $0.10$ percentage points using the official implementation.
+    \item Agreement is about the aggregate number: the release publishes no
+          per-episode predictions, so per-sample identity is not claimed.
+    \item The P12/P10 gap is a single-run precision control and is \emph{not}
+          a stable precision advantage.
+    \item Non-finite engineering failures (NaN GPU inputs) are reported
+          separately from genuine task failures such as the drawer case.
+    \item In this configuration the 8-D state is \emph{not} a network
+          condition, so no state-conditioned claim is made.
+    \item This is a baseline reproduction, not a fair architecture comparison
+          with the other model in this project.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Reference}
+  \begin{itemize}
+    \item \texorpdfstring{$\pi_{0.5}$}{pi-0.5}: Black et al., \emph{A
+          Vision--Language--Action Model with Open-World Generalization},
+          arXiv:2504.16054.
+    \item OpenPI reference implementation: revision
+          \texttt{215abfb2}.
+    \item LIBERO: Liu et al., \emph{Benchmarking Knowledge Transfer for
+          Lifelong Robot Learning}, arXiv:2306.03310.
+  \end{itemize}
+  \vfill
+  \centering
+  {\small Full report: \texttt{reports/2026.10.05-2026.10.11-pi05-libero/}}
+\end{frame}

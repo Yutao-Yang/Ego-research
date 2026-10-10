@@ -4,7 +4,7 @@
 %      latexmk report          (recommended; output goes to pdf/,
 %                               intermediates go to build/)
 %  The body of each experiment lives in its own sub-folder under
-%  reports/experiments/ and is pulled in with \input, so the same
+%  reports/ and is pulled in with \input, so the same
 %  sections can also be compiled standalone.
 % ============================================================
 \documentclass[11pt, a4paper]{article}
@@ -27,7 +27,7 @@
   released $\pi_{0.5}$ LIBERO policy with the official OpenPI implementation and
   obtains $1935/2000 = 96.75\,\%$ (official $96.85\,\%$). Neither model was
   retrained. Each experiment is written as a self-contained section pulled in
-  from \texttt{reports/}\allowbreak\texttt{experiments/}, and the figures are
+  from \texttt{reports/}, and the figures are
   shared from \texttt{figures/}. The two results answer each author's own
   reproduction question and must not be compared as a fair architectural
   comparison.
@@ -37,8 +37,8 @@
 \newpage
 
 % ---------- Body: include one section per experiment, in order ----------
-\input{reports/experiments/2026.10.05-2026.10.11-openwam-libero/body}
-\input{reports/experiments/2026.10.05-2026.10.11-pi05-libero/body}
+\input{reports/2026.10.05-2026.10.11-openwam-libero/body}
+\input{reports/2026.10.05-2026.10.11-pi05-libero/body}
 
 % ---------- References ----------
 \bibliographystyle{plain}

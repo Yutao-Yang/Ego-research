@@ -1,28 +1,28 @@
 % ============================================================
-%  slides.tex - entry point for the current presentation
+%  slides.tex - entry point for the consolidated slide deck
 %  Compile from the project root:
-%      latexmk slides          (recommended; output goes to build/)
-%  or manually: xelatex slides (run twice)
+%      latexmk slides          (recommended; intermediates go to build/,
+%                               the resulting PDF goes to pdf/)
+%  The frames of each experiment live in their own slides/<folder>/body.tex,
+%  so the same frames can also be compiled on their own through the matching
+%  slides/<folder>/<name>-slides.tex entry point.
 % ============================================================
-\documentclass[aspectratio=169]{beamer}
+\documentclass[aspectratio=169,usepdftitle=false]{beamer}
 
-\usepackage{ego-slides}
+\usepackage{ego-beamer}
 
-\title[Ego Research]{Ego Research: Progress Report}
-\subtitle{Current results and next steps}
-\author[Ego]{Ego Research}
-\institute{Ego Research}
-\date{\today}
+% PDF metadata, set once here so the deck-level \author in the bodies does
+% not re-issue \hypersetup{pdfauthor=...} (which hyperref reports as a
+% duplicated option).
+\hypersetup{
+  pdftitle={Ego Research --- LIBERO reproductions, consolidated slide deck},
+  pdfauthor={Yutao-Yang},
+}
 
 \begin{document}
 
-% ---------- Title slide ----------
-\maketitle
-
-% ---------- Outline ----------
-\egotoc{}
-
-% ---------- Body: include the current meeting deck ----------
-\input{slides/meetings/ex}
+% ---------- One experiment after the other, in order ----------
+\input{slides/2026.10.05-2026.10.11-openwam-libero/body}
+\input{slides/2026.10.05-2026.10.11-pi05-libero/body}
 
 \end{document}
