@@ -1,11 +1,12 @@
 % ============================================================
-%  slides.tex - entry point for the consolidated slide deck
-%  Compile from the project root:
-%      latexmk slides          (recommended; intermediates go to build/,
-%                               the resulting PDF goes to pdf/)
-%  The frames of each experiment live in their own slides/<folder>/body.tex,
+%  beamer.tex - entry point for the consolidated slide deck
+%  Compile from THIS folder (main/), so that ./latexmkrc puts everything
+%  in ./pdf/:
+%      latexmk beamer
+%  The frames of each experiment live in their own ../beamer/<folder>/body.tex,
 %  so the same frames can also be compiled on their own through the matching
-%  slides/<folder>/<name>-slides.tex entry point.
+%  beamer/<folder>/<name>-beamer.tex entry point (run from inside that folder,
+%  where the products then land in beamer/<folder>/pdf/).
 % ============================================================
 \documentclass[aspectratio=169,usepdftitle=false]{beamer}
 
@@ -22,7 +23,7 @@
 \begin{document}
 
 % ---------- One experiment after the other, in order ----------
-\input{slides/2026.10.05-2026.10.11-openwam-libero/body}
-\input{slides/2026.10.05-2026.10.11-pi05-libero/body}
+\input{../beamer/2026.10.05-2026.10.11-openwam-libero/body}
+\input{../beamer/2026.10.05-2026.10.11-pi05-libero/body}
 
 \end{document}

@@ -1,13 +1,18 @@
 {
   // ---------- 输出目录布局 ----------
-  // 最终 PDF 统一输出到 pdf/；中间文件由 .latexmkrc 的 $aux_dir 送到 build/。
-  // 所有入口共用工作区根目录的 pdf/ 与 build/，包括子目录中的独立入口。
+  // 每个入口都在「自己所在的目录」里编译，读取该目录的 .latexmkrc（$out_dir='pdf'），
+  // 中间文件与最终 PDF 因此都落在入口同级的 pdf/ 子目录里：
+  //   main/report.tex / main/beamer.tex        ->  main/pdf/
+  //   reports/<实验>/<实验>.tex                ->  reports/<实验>/pdf/
+  //   beamer/<实验>/<实验>-beamer.tex          ->  beamer/<实验>/pdf/
+  // %DIR% 即当前 root file 所在目录，正好对应上面每个入口的「自身目录」。
   // 重要：不要在下面 tools.args 里加 %OUTDIR%，那会覆盖 .latexmkrc 的目录设置。
-  "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%/pdf",
-  "latex-workshop.latex.auxDir": "%WORKSPACE_FOLDER%/build",
+  "latex-workshop.latex.outDir": "%DIR%/pdf",
+  "latex-workshop.latex.auxDir": "%DIR%/pdf",
 
-  // ---------- 使用 latexmk + XeLaTeX（读取根目录的 .latexmkrc） ----------
-  "latex-workshop.latex.build.fromFolder": ".",
+  // ---------- 使用 latexmk + XeLaTeX（读取「入口所在目录」的 .latexmkrc） ----------
+  // 注意：不要设置 latex-workshop.latex.build.fromFolder，否则 latexmk 会被
+  // 强制在工作区根目录运行，读不到各入口目录里的 .latexmkrc。
   "latex-workshop.latex.recipe.default": "latexmk (xelatex)",
   "latex-workshop.latex.recipes": [
     {
@@ -33,7 +38,7 @@
   // ---------- 保存即编译 ----------
   "latex-workshop.latex.autoBuild.run": "onSave",
 
-  // ---------- 清理：连同 build/ 内的中间文件一起清 ----------
+  // ---------- 清理：连同各级 pdf/ 内的中间文件一起清 ----------
   "latex-workshop.latex.clean.subfolder.enabled": true,
   "latex-workshop.latex.clean.fileTypes": [
     "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof", "*.lot",

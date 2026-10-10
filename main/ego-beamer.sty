@@ -55,12 +55,17 @@
 \setbeamertemplate{navigation symbols}{}
 
 % ---------- Asset paths ----------
-\graphicspath{{figures/}{figures/beamer_background/}{../figures/}{../../figures/}}
-\newcommand{\egobgdir}{figures/beamer_background/}
-\newcommand{\egoimgbody}{\egobgdir 正文图片背景.png}
-\newcommand{\egoimgtitle}{\egobgdir 标题页图片背景2.png}
-\newcommand{\egoimgbar}{\egobgdir 页眉页脚.png}
-\newcommand{\egoimglogo}{\egobgdir 右上角logo.png}
+% A deck is compiled either from main/ (the consolidated beamer.tex) or from
+% beamer/<folder>/ (standalone entries), so the figures/ tree has to be
+% reachable through ../ and through ../../.
+\graphicspath{{../figures/}{../figures/beamer_background/}%
+              {../../figures/}{../../figures/beamer_background/}}
+% The four look-and-feel assets are named without a directory and found through
+% \graphicspath, so the same macros work from either directory.
+\newcommand{\egoimgbody}{正文图片背景.png}
+\newcommand{\egoimgtitle}{标题页图片背景2.png}
+\newcommand{\egoimgbar}{页眉页脚.png}
+\newcommand{\egoimglogo}{右上角logo.png}
 
 % ---------- Footer identifiers ----------
 % Author shown in the first footer block (fixed by the house style).
@@ -232,9 +237,13 @@
 % ---------- Video link helper ----------
 % Beamer's media packages need a specific viewer, so a video is shown as a
 % representative still frame plus a clickable link to the file.
-% The PDF lives in pdf/, hence the ../ prefix.
+% The link is relative to the directory holding the PDF, so the prefix that
+% reaches figures/ depends on where the PDF sits: ../../figures/ from main/pdf/,
+% ../../../figures/ from <experiment>/pdf/.  A standalone deck overrides
+% \egovideoroot in its own entry file.
+\newcommand{\egovideoroot}{../../figures/}
 \newcommand{\egovideolink}[2][Play video]{%
-  \href{run:../figures/#2}{\beamerbutton{#1}}%
+  \href{run:\egovideoroot#2}{\beamerbutton{#1}}%
 }
 
 \mode<all>

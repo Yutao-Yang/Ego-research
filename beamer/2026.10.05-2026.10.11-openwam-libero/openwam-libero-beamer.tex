@@ -1,14 +1,18 @@
 % ============================================================
-%  openwam-libero-slides.tex
+%  openwam-libero-beamer.tex
 %  Standalone entry point for the Experiment A slide deck
 %  (OpenWAM-alpha on LIBERO).
-%  Compile from the project root:
-%      latexmk slides/2026.10.05-2026.10.11-openwam-libero/openwam-libero-slides
-%  The same frames are merged into the consolidated root slides.tex.
+%  Compile from THIS folder (so that ./latexmkrc puts everything in ./pdf/):
+%      latexmk openwam-libero-beamer
+%  The same frames are merged into main/beamer.tex.
 % ============================================================
 \documentclass[aspectratio=169,usepdftitle=false]{beamer}
 
 \usepackage{ego-beamer}
+
+% The PDF sits in beamer/<folder>/pdf/, so the video links have to climb three
+% levels to reach the shared figures/ tree.
+\renewcommand{\egovideoroot}{../../../figures/}
 
 \hypersetup{
   pdftitle={Reproducing OpenWAM-alpha on LIBERO},
@@ -17,6 +21,6 @@
 
 \begin{document}
 
-\input{slides/2026.10.05-2026.10.11-openwam-libero/body}
+\input{body}
 
 \end{document}

@@ -1,8 +1,9 @@
 # ---------- LaTeX 编译产物 ----------
-# 所有中间文件输出到 build/，整个目录不入库
-build/
+# 中间文件与 PDF 同放在各级 pdf/ 子目录里：main/pdf/（合并入口）、
+# reports/<folder>/pdf/、beamer/<folder>/pdf/ 都适用。
+# 下面按扩展名逐类忽略中间文件；PDF 本身保留入库（见下）。
 
-# 其余中间文件（含 pdf/ 下的 *.synctex.gz）一并忽略（不影响 figures/ 里的图片）
+# 中间文件（含 pdf/ 下的 *.synctex.gz；不影响 figures/ 里的图片）
 *.aux
 *.bbl
 *.blg

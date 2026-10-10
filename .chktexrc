@@ -26,21 +26,8 @@
 ##   46  \(...\) vs $...$       this project writes inline math as $...$
 ##
 ## The genuine findings were fixed in the sources, not muted: class 1 (command
-## terminated by a space) everywhere except \egobgdir, class 2 (missing
-## non-breaking space) and class 6 (missing italic correction).
-##
-## \egobgdir is the one exception: it ends the asset directory on the letter
-## `r', so the Chinese file name that follows has to start with a space to
-## terminate the control word, and graphicx cannot take the `{}' idiom (the
-## braces would be spliced into the file name, e.g.
-## `figures/beamer_background/{}页眉页脚.png').  `Silent' is chktex's list of
-## commands for which a trailing space is legitimate; the entry below is
-## appended to chktex's built-in list.
-
-Silent
-{
-    \egobgdir
-}
+## terminated by a space), class 2 (missing non-breaking space) and class 6
+## (missing italic correction).
 
 TabSize = 8
 

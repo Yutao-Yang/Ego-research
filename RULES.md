@@ -9,43 +9,56 @@
 
 ```
 ego-research/
-├── report.tex                          # 总报告入口：\input 各实验 body
-├── slides.tex                          # 合并幻灯片入口：\input 各实验 deck body
-├── ego-report.sty                      # 报告样式（字体 / 版式 / \btt / longtable）
-├── ego-beamer.sty                      # 幻灯片样式（页眉 / 页脚 / 背景 / 素材）
-├── references.bib                      # 全项目共用参考文献
-├── .latexmkrc                          # 中间文件 → build/，PDF → pdf/
+├── main/                               # 合并入口 + 全项目共用资源
+│   ├── report.tex                      # 总报告入口：\input ../reports/... 各实验 body
+│   ├── beamer.tex                      # 合并幻灯片入口：\input ../beamer/... 各 deck body
+│   ├── ego-report.sty                  # 报告样式（字体 / 版式 / \btt / longtable）
+│   ├── ego-beamer.sty                  # 幻灯片样式（页眉 / 页脚 / 背景 / 素材）
+│   ├── references.bib                  # 全项目共用参考文献
+│   ├── .latexmkrc                      # main 入口配置：中间文件与 PDF 都进 ./pdf/
+│   └── pdf/                            # 【自动生成】main 入口的中间文件 + PDF + synctex
 │
 ├── reports/
 │   └── 2026.10.05-2026.10.11-openwam-libero/
+│       ├── .latexmkrc                  # 本实验配置：中间文件与 PDF 都进 ./pdf/
 │       ├── openwam-libero.tex          # 独立入口（标题 + 摘要 + \input body）
-│       └── body.tex                    # 纯正文章节，被两处复用
+│       ├── body.tex                    # 纯正文章节，被两处复用
+│       └── pdf/                        # 【自动生成】本实验的中间文件 + PDF + synctex
 │
-├── slides/
+├── beamer/
 │   └── 2026.10.05-2026.10.11-openwam-libero/
-│       ├── openwam-libero-slides.tex   # 独立入口（导言区 + \input body）
-│       └── body.tex                    # 纯帧内容，被两处复用
+│       ├── .latexmkrc                  # 本实验配置：中间文件与 PDF 都进 ./pdf/
+│       ├── openwam-libero-beamer.tex   # 独立入口（导言区 + \input body）
+│       ├── body.tex                    # 纯帧内容，被两处复用
+│       └── pdf/                        # 【自动生成】本实验的中间文件 + PDF + synctex
 │
 ├── figures/
 │   ├── beamer_background/              # 幻灯片四张视觉素材（见 §4.1）
-│   └── 2026.10.05-2026.10.11-openwam-libero/   # 与 report/slides 同名，放图片与 mp4
+│   └── 2026.10.05-2026.10.11-openwam-libero/   # 与 reports/beamer 同名，放图片与 mp4
 │
-├── build/                              # 【自动生成】全部中间文件
-└── pdf/                                # 【自动生成】最终 PDF + synctex
+├── .chktexrc                           # 项目级 chktex 配置（见 §5.1）
+├── .gitignore                          # 忽略各级 pdf/ 里的中间文件
+├── README.md                           # 环境、编译与编辑器配置
+└── RULES.md                            # 本文档
 ```
 
 ### 命名规则
 
 | 对象 | 规则 | 示例 |
 | --- | --- | --- |
-| 实验文件夹（reports / slides / figures 三处） | `起止日期-实验名`，三处**完全同名** | `2026.10.05-2026.10.11-openwam-libero` |
+| 实验文件夹（reports / beamer / figures 三处） | `起止日期-实验名`，三处**完全同名** | `2026.10.05-2026.10.11-openwam-libero` |
 | 报告独立入口 | `实验名.tex` | `openwam-libero.tex` |
 | 报告正文 | 固定叫 `body.tex` | `body.tex` |
-| 幻灯片独立入口 | `实验名-slides.tex` | `openwam-libero-slides.tex` |
+| 幻灯片独立入口 | `实验名-beamer.tex` | `openwam-libero-beamer.tex` |
 | 幻灯片正文 | 固定叫 `body.tex`（与报告正文同名但各自独立） | `body.tex` |
+| 实验文件夹的编译配置 | 固定叫 `.latexmkrc`（reports / beamer 的每个实验各一份） | `.latexmkrc` |
+| 实验文件夹的产物目录 | 固定叫 `pdf/`（中间文件与 PDF 都在里面） | `pdf/` |
 | 委托标识（页脚中块） | 与实验文件夹名逐字一致 | `2026.10.05-2026.10.11-openwam-libero` |
+| 合并入口与全项目共用资源 | 全部收在 `main/`（入口、两个 `.sty`、`references.bib`、`.latexmkrc`、`pdf/`） | `main/report.tex` |
 
-> 实验文件夹**直接放在 `reports/` 下**，不再有 `reports/experiments/` 这一层。
+> 实验文件夹**直接放在 `reports/`（或 `beamer/`）下**，不再有 `reports/experiments/` 这一层。
+> 幻灯片目录叫 `beamer/`，不叫 `slides/`；系统生成的产物目录叫 `pdf/`，不叫 `build/`。
+> 根目录只有 `main/`、`reports/`、`beamer/`、`figures/` 四个目录与若干配置文件，不再直接在根目录放源码。
 
 ---
 
@@ -63,13 +76,14 @@ ego-research/
 
 同一份实验正文要出现在**两个 PDF** 里：
 
-1. 该实验自己的独立 PDF（`latexmk reports/<folder>/<name>`）；
-2. 根目录的总报告 `report.tex`（把两份实验合并）。
+1. 该实验自己的独立 PDF（在实验文件夹里执行 `latexmk <实验名>`）；
+2. `main/` 里的总报告 `report.tex`（把两份实验合并）。
 
 因此把正文写成**无导言区**的 `body.tex`（只有 `\section` 起的章节内容），由两处 `\input` 复用：
 
 ```latex
 % reports/2026.10.05-2026.10.11-openwam-libero/openwam-libero.tex
+% 在「本文件夹」里编译：latexmk openwam-libero
 \documentclass[11pt, a4paper]{article}
 \usepackage{ego-report}
 \title{...} \author{Ego Research} \date{\today}
@@ -78,24 +92,25 @@ ego-research/
   \begin{abstract} ... \end{abstract}
   \tableofcontents
   \newpage
-  \input{reports/2026.10.05-2026.10.11-openwam-libero/body}
+  \input{body}                 % 同目录，写相对本文件夹的短路径
   \bibliographystyle{plain}\bibliography{references}
 \end{document}
 ```
 
 ```latex
-% report.tex
-\input{reports/2026.10.05-2026.10.11-openwam-libero/body}
-\input{reports/2026.10.05-2026.10.11-pi05-libero/body}
+% main/report.tex（在 main/ 里编译：latexmk report）
+\input{../reports/2026.10.05-2026.10.11-openwam-libero/body}
+\input{../reports/2026.10.05-2026.10.11-pi05-libero/body}
 ```
 
 要点：
 
-- `\input` 路径**相对项目根目录**写全（编译命令都在根目录执行）。
+- `\input` 路径按**编译时所在目录**写：`main/` 入口用相对 `main/` 的路径（`../reports/...`），各实验入口写 `\input{body}`（同目录）。实验入口必须在**它自己的文件夹里**编译，见 §5。
 - 标题/摘要/目录/参考文献只写在入口文件，`body.tex` 里**不能**出现 `\documentclass`、`\usepackage`、`\begin{document}`。
-- **幻灯片采用完全相同的拆法**：每份 deck 的帧写在 `slides/<folder>/body.tex`，由两处 `\input` 复用 —— 该 deck 的独立入口 `slides/<folder>/<实验名>-slides.tex`（负责 `\documentclass` 与 `\usepackage{ego-beamer}`）与根目录合并入口 `slides.tex`。
+- **幻灯片采用完全相同的拆法**：每份 deck 的帧写在 `beamer/<folder>/body.tex`，由两处 `\input` 复用 —— 该 deck 的独立入口 `beamer/<folder>/<实验名>-beamer.tex`（负责 `\documentclass` 与 `\usepackage{ego-beamer}`）与 `main/` 里的合并入口 `beamer.tex`。
 - 因此幻灯片 `body.tex` **不能**出现 `\documentclass` / `\usepackage` / `\begin{document}`；但 **deck 的元数据（`\title` / `\subtitle` / `\author` / `\date` / `\egodeckid`）要写在 `body.tex` 开头**，这样合并 PDF 里每份 deck 的标题页与页脚中块才会随实验正确切换。
-- 合并时各 deck 的顺序即 `slides.tex` 中 `\input` 的先后顺序。
+- 合并时各 deck 的顺序即 `main/beamer.tex` 中 `\input` 的先后顺序。
+- 独立 deck 入口要 `\renewcommand{\egovideoroot}{../../../figures/}`：它的 PDF 落在 `beamer/<folder>/pdf/`（比合并入口的 `main/pdf/` 深一层），视频链接的相对前缀要跟着变（见 §4.5）。
 
 ### 3.2 章节结构模板（即“Contents”目录）
 
@@ -168,15 +183,17 @@ ego-research/
 与报告同样拆成**独立入口 + `body.tex`**（见 §3.1），入口只管导言区与 `\input`：
 
 ```latex
-% slides/2026.10.05-2026.10.11-openwam-libero/openwam-libero-slides.tex
+% beamer/2026.10.05-2026.10.11-openwam-libero/openwam-libero-beamer.tex
+% 在「本文件夹」里编译：latexmk openwam-libero-beamer
 \documentclass[aspectratio=169,usepdftitle=false]{beamer}
 \usepackage{ego-beamer}
+\renewcommand{\egovideoroot}{../../../figures/}   % PDF 在 beamer/<folder>/pdf/
 \hypersetup{                          % PDF 元数据只在这里设一次
   pdftitle={Reproducing OpenWAM-alpha on LIBERO},
   pdfauthor={Yutao-Yang},
 }
 \begin{document}
-  \input{slides/2026.10.05-2026.10.11-openwam-libero/body}
+  \input{body}
 \end{document}
 ```
 
@@ -185,7 +202,7 @@ ego-research/
 > `Option 'pdfauthor' has already been used`。关掉 beamer 的自动 pdfinfo 后由入口统一设置，日志即可保持干净。
 
 ```latex
-% slides/2026.10.05-2026.10.11-openwam-libero/body.tex
+% beamer/2026.10.05-2026.10.11-openwam-libero/body.tex
 % 元数据写在 body 开头，合并 PDF 才会随实验正确切换标题页与页脚
 \egodeckid{2026.10.05-2026.10.11-openwam-libero}   % 页脚中块，必须与实验文件夹同名
 \title{Reproducing OpenWAM-\texorpdfstring{$\alpha$}{alpha} on LIBERO}
@@ -203,10 +220,10 @@ ego-research/
 \begin{frame}{...} ... \end{frame}
 ```
 
-根目录的合并入口 `slides.tex` 依次 `\input` 各实验的 `body`：
+`main/` 里的合并入口 `beamer.tex` 依次 `\input` 各实验的 `body`：
 
 ```latex
-% slides.tex
+% main/beamer.tex（在 main/ 里编译：latexmk beamer）
 \documentclass[aspectratio=169,usepdftitle=false]{beamer}
 \usepackage{ego-beamer}
 \hypersetup{
@@ -214,8 +231,8 @@ ego-research/
   pdfauthor={Yutao-Yang},
 }
 \begin{document}
-  \input{slides/2026.10.05-2026.10.11-openwam-libero/body}
-  \input{slides/2026.10.05-2026.10.11-pi05-libero/body}
+  \input{../beamer/2026.10.05-2026.10.11-openwam-libero/body}
+  \input{../beamer/2026.10.05-2026.10.11-pi05-libero/body}
 \end{document}
 ```
 
@@ -228,7 +245,7 @@ ego-research/
 | `\egooutline` | 目录页（`\tableofcontents`），用标题背景 |
 | `\section{...}` | 除生成目录条目外，自动插入一张标题背景分隔页 |
 | `\egosectionpage{<标题>}` | 手动插入一张分隔页（一般不直接用） |
-| `\egovideolink[按钮文字]{<文件夹>/<文件名>.mp4}` | 生成“Play video”按钮，点击用系统播放器打开 `pdf/` 旁的视频 |
+| `\egovideolink[按钮文字]{<文件夹>/<文件名>.mp4}` | 生成“Play video”按钮；链接前缀取 `\egovideoroot`（合并 deck 用默认 `../../figures/`，独立 deck 覆写为 `../../../figures/`） |
 
 > 上表前三类（`\egotitleframe`、`\egooutline`、`\section` 触发的分隔页）内部都用 beamer 的 `plain` 帧，
 > 所以它们**没有页眉页脚**（无蓝条、无 logo、无页码）。因为 `plain` 帧不显示 `frametitle`，
@@ -263,48 +280,75 @@ beamer 的 `media9`/`multimedia` 依赖特定阅读器，不采用。统一做�
 
 1. 用一张**代表性静帧** PNG 占位（末帧或接触表）；
 2. 用 `\egovideolink{<folder>/<file>.mp4}` 生成按钮；
-3. 视频文件放在 `figures/<folder>/`，PDF 放在 `pdf/`，因此按钮路径写 `run:../figures/<folder>/<file>.mp4`（由 `\egovideolink` 自动拼好）。
+3. 视频文件放在 `figures/<folder>/`；按钮里的路径是**相对 PDF 所在目录**的，而 PDF 位置随入口而变，所以前缀由宏 `\egovideoroot` 给出：合并 deck（`main/pdf/xxx.pdf`）用默认值 `../../figures/`，独立 deck（`beamer/<folder>/pdf/xxx.pdf`）在入口文件里 `\renewcommand{\egovideoroot}{../../../figures/}`。
 
 ### 4.6 图片引用路径
 
-`ego-beamer.sty` 里的 `\graphicspath` 已包含 `figures/`，所以正文只写：
+两个样式里的 `\graphicspath` 同时含 `../figures/`（供在 `main/` 里编译合并入口时使用）与 `../../figures/`（供在实验文件夹里编译时使用），所以正文只写「实验文件夹名/文件名」，不写 `figures/` 前缀：
 
 ```latex
 \includegraphics[width=0.46\linewidth]{2026.10.05-2026.10.11-openwam-libero/official-comparison.png}
 ```
 
+§4.1 的四张背景素材同理：`ego-beamer.sty` 里用**裸文件名**引用它们，靠 `\graphicspath` 命中 `figures/beamer_background/`（或 `../../figures/beamer_background/`），因此合并 deck 与独立 deck 都能正常取图。
+
 ---
 
 ## 5. 编译与产物
 
-所有命令都在**项目根目录**执行。
+**每个入口都在它自己的目录里编译。** latexmk 只读取「启动目录」（也就是你敲命令时所在的目录）下的 `.latexmkrc`，
+所以进哪个目录编译，产物就按哪个目录的配置落到那个目录的 `pdf/` 里。
 
 ```bash
-latexmk report                                              # 总报告
-latexmk reports/2026.10.05-2026.10.11-openwam-libero/openwam-libero
-latexmk reports/2026.10.05-2026.10.11-pi05-libero/pi05-libero
-latexmk slides                                              # 合并幻灯片
-latexmk slides/2026.10.05-2026.10.11-openwam-libero/openwam-libero-slides
-latexmk slides/2026.10.05-2026.10.11-pi05-libero/pi05-libero-slides
-latexmk -C                                                  # 清理全部产物
+# 合并入口 —— 产物进 main/pdf/
+cd main
+latexmk report                                          # 总报告（合并两份实验）
+latexmk beamer                                          # 合并幻灯片
+
+# 实验独立报告 —— 产物进 reports/<folder>/pdf/
+cd ../reports/2026.10.05-2026.10.11-openwam-libero
+latexmk openwam-libero
+cd ../2026.10.05-2026.10.11-pi05-libero
+latexmk pi05-libero
+
+# 实验独立幻灯片 —— 产物进 beamer/<folder>/pdf/
+cd ../../beamer/2026.10.05-2026.10.11-openwam-libero
+latexmk openwam-libero-beamer
+cd ../2026.10.05-2026.10.11-pi05-libero
+latexmk pi05-libero-beamer
+
+latexmk -C                                              # 清理「当前目录」的产物
 ```
 
+产物布局（每个入口目录一份 `pdf/`，中间文件与 PDF 同放其中）：
+
+| 入口 | 中间文件 + PDF 的位置 |
+| --- | --- |
+| `main/report.tex` / `main/beamer.tex` | `main/pdf/` |
+| `reports/<folder>/<实验名>.tex` | `reports/<folder>/pdf/` |
+| `beamer/<folder>/<实验名>-beamer.tex` | `beamer/<folder>/pdf/` |
+
 - 必须 **XeLaTeX**（样式用 `fontspec` 按字体名加载 OpenType 字体）。
-- **所有中间文件进 `build/`**；**最终 PDF 与 `synctex.gz` 进 `pdf/`**；根目录只保留源码与配置。
-- 由 `.latexmkrc`（`$aux_dir='build'`、`$out_dir='pdf'`、`$pdf_mode=5`）自动控制，不要手动加 `-output-directory`。
+- 目录由各级 `.latexmkrc` 控制：只设 `$out_dir='pdf'`、**不设** `$aux_dir`（latexmk 会把 aux 目录默认成同一个），
+  于是 `.aux .log .toc .bbl .xdv .fls` 等中间文件与最终 PDF、`.synctex.gz` **全部落在同一个 `pdf/`**。
+  不要手动加 `-output-directory`。
+- 实验文件夹的 `.latexmkrc` 另外设了两条搜索路径：`TEXINPUTS=../../main/;…`（找到 `main/` 里的 `ego-report.sty` / `ego-beamer.sty`）
+  与 `BIBINPUTS=../../main/;…`（找到 `main/` 里的 `references.bib`）。
+- **不要**在别的目录编译实验入口：latexmk 只读「启动目录」的 `.latexmkrc`，跨目录执行会拿到别的配置、把产物放错地方。
+  同理别用 `latexmk -cd` 从外部跨目录编译——`-cd` 只改工作目录，不改读取的配置文件。
 
 ### 交付前自检（每次都要做）
 
 1. 编译日志中**没有** `Error`、`Overfull`、`Underfull`、未解决的 `LaTeX Warning`（`Rerun to get ...` 重跑一次即可消失）。
-2. `pdf/` 下 PDF 数量齐全（本项目：报告 3 份 = `report` + 2 份独立报告；幻灯片 3 份 = `slides` + 2 份独立 deck）。
-3. `build/` 收纳了全部中间文件，根目录没有被编译产物污染。
+2. 六个入口的 `pdf/` 下 PDF 齐全：`main/pdf/` = `report` + `beamer`；`reports/<folder>/pdf/` 各 1 份；`beamer/<folder>/pdf/` 各 1 份。
+3. 中间文件与 PDF 都收在各自的 `pdf/` 里，源码目录（`main/`、各实验文件夹）除 `pdf/` 外没有被编译产物污染；根目录不出现 `build/` 或 `pdf/`。
 4. 用 `pdftoppm` 把 PDF 渲染成 PNG 抽查版式（页眉条、左上角标题、右上角 logo、页脚三块、背景图是否正常）：
 
 ```bash
-pdftoppm -png -r 100 -f <首页> -l <末页> pdf/<file>.pdf build/_prev/<prefix>
+pdftoppm -png -r 100 -f <首页> -l <末页> <某个 pdf/<file>.pdf> <临时目录>/<prefix>
 ```
 
-抽查完成后删除 `build/_prev/` 等临时预览目录。
+抽查完成后删除临时预览目录。
 
 5. Problems 面板（chktex）为 0，见 §5.1。
 
@@ -337,9 +381,8 @@ pdftoppm -png -r 100 -f <首页> -l <末页> pdf/<file>.pdf build/_prev/<prefix>
 | 36 | 函数名后的空格 | `\texttt{...}` 里的 `env.reset()` 之类 |
 | 41 | 原生 TeX 原语 | 两个 `.sty` 里刻意的 `\vskip` / `\def` |
 
-唯一例外是 `\egobgdir`（见 §4.1）：它以字母 `r` 结尾，后面跟中文文件名必须用**空格**终止控制词，
-而 graphicx 不接受 `{}` 的写法（`{}` 会被拼进文件名，导致读图失败），因此把 `\egobgdir`
-追加进 `.chktexrc` 的 `Silent` 列表，让这一处合法的空格终止不再报警。
+以上三类静音之外不再有例外：背景素材改用**裸文件名 + `\graphicspath`** 加载（见 §4.6），
+不再需要在 chktex 里为某个宏开 `Silent` 白名单。
 
 改完 `.chktexrc` 要做**反向验证**，避免出现“把检查关掉”的假清零：
 
@@ -354,10 +397,10 @@ chktex -wall -n22 -n30 -e16 -q -l .chktexrc -I0 <file>       # 带 rc：应为 0
 
 新增一个实验时按序完成：
 
-1. 建 `reports/<日期-实验名>/`，写 `body.tex`（按 §3.2 章节结构，纯英文）与 `<实验名>.tex`（标题 + 摘要 + `\input`）。
-2. 在 `report.tex` 里 `\input{reports/<日期-实验名>/body}`。
+1. 建 `reports/<日期-实验名>/`，写 `body.tex`（按 §3.2 章节结构，纯英文）、`<实验名>.tex`（标题 + 摘要 + `\input{body}`），并放一份该文件夹的 `.latexmkrc`（可复制同级实验的）。
+2. 在 `main/report.tex` 里 `\input{../reports/<日期-实验名>/body}`。
 3. 在 `figures/<日期-实验名>/` 放图片与 mp4（目录名与上一步一致）。
-4. 建 `slides/<日期-实验名>/`，写 `body.tex`（按 §4.2，`\egodeckid` 填文件夹名）与 `<实验名>-slides.tex`（导言区 + `\input`）；页脚作者与他人保持一致。
-5. 在根目录 `slides.tex` 里 `\input{slides/<日期-实验名>/body}`。
-6. 逐份 `latexmk` 编译（含合并入口 `latexmk slides`），确认 §5 的四项自检全部通过。
-7. 若改了 `ego-beamer.sty` 的通用版式，两份独立 deck 与合并 `slides` 共三份都要重新编译验证。
+4. 建 `beamer/<日期-实验名>/`，写 `body.tex`（按 §4.2，`\egodeckid` 填文件夹名）、`<实验名>-beamer.tex`（导言区 + `\input{body}` + `\renewcommand{\egovideoroot}{../../../figures/}`）与一份 `.latexmkrc`；页脚作者与他人保持一致。
+5. 在 `main/beamer.tex` 里 `\input{../beamer/<日期-实验名>/body}`。
+6. 六个入口各自**在自己目录里**编译一次（`main/` 里 `latexmk report`、`latexmk beamer`，四个实验目录各 `latexmk <入口名>`），确认 §5 的自检项全部通过。
+7. 若改了 `ego-beamer.sty` 的通用版式，两份独立 deck 与合并 `beamer` 共三份都要重新编译验证。

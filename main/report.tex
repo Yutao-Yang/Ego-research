@@ -1,11 +1,12 @@
 % ============================================================
 %  report.tex - entry point for the consolidated experiment report
-%  Compile from the project root:
-%      latexmk report          (recommended; output goes to pdf/,
-%                               intermediates go to build/)
+%  Compile from THIS folder (main/), so that ./latexmkrc puts everything
+%  in ./pdf/:
+%      latexmk report
 %  The body of each experiment lives in its own sub-folder under
-%  reports/ and is pulled in with \input, so the same
-%  sections can also be compiled standalone.
+%  ../reports/ and is pulled in with \input, so the same
+%  sections can also be compiled standalone (from inside that folder,
+%  where the products then land in reports/<folder>/pdf/).
 % ============================================================
 \documentclass[11pt, a4paper]{article}
 
@@ -37,8 +38,8 @@
 \newpage
 
 % ---------- Body: include one section per experiment, in order ----------
-\input{reports/2026.10.05-2026.10.11-openwam-libero/body}
-\input{reports/2026.10.05-2026.10.11-pi05-libero/body}
+\input{../reports/2026.10.05-2026.10.11-openwam-libero/body}
+\input{../reports/2026.10.05-2026.10.11-pi05-libero/body}
 
 % ---------- References ----------
 \bibliographystyle{plain}

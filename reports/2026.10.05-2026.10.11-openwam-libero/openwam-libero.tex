@@ -1,9 +1,9 @@
 % ============================================================
 %  openwam-libero.tex
 %  Standalone entry point for Experiment A (OpenWAM-alpha on LIBERO).
-%  Compile from the project root:
-%      latexmk reports/2026.10.05-2026.10.11-openwam-libero/openwam-libero
-%  The same body is merged into the root report.tex.
+%  Compile from THIS folder (so that ./latexmkrc puts everything in ./pdf/):
+%      latexmk openwam-libero
+%  The same body is merged into main/report.tex.
 % ============================================================
 \documentclass[11pt, a4paper]{article}
 
@@ -31,7 +31,7 @@
 \tableofcontents
 \newpage
 
-\input{reports/2026.10.05-2026.10.11-openwam-libero/body}
+\input{body}
 
 \bibliographystyle{plain}
 \bibliography{references}

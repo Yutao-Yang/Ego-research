@@ -50,7 +50,10 @@
 \captionsetup{font=small, labelfont={bf,color=egoblue}, labelsep=quad}
 
 % ---------- Graphics search path (shared with the slides) ----------
-\graphicspath{{figures/}{../figures/}}
+% A report is compiled either from main/ (the consolidated report.tex) or from
+% reports/<folder>/ (standalone entries), so figures/ has to be reachable
+% through ../ and through ../../.
+\graphicspath{{../figures/}{../../figures/}}
 
 % ---------- Breakable monospace ----------
 % \btt{...} sets its argument in monospace and allows a line break after
